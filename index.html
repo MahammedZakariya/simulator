@@ -1,47 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Presence Simulator</title>
+  <title>Stay Active Tool</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial;
       text-align: center;
       margin-top: 100px;
     }
-
-    button {
-      padding: 15px 25px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    #status {
-      margin-top: 20px;
-      font-weight: bold;
+    #ghostInput {
+      position: absolute;
+      left: -9999px;
     }
   </style>
 </head>
 <body>
   <h1>Stay Active Tool</h1>
-  <button onclick="startSimulation()">Start Activity</button>
-  <div id="status">Inactive</div>
+  <button onclick="start()">Start Activity</button>
+  <p id="status">Not running</p>
+  <input id="ghostInput" type="text" />
 
   <script>
-    let interval;
+    let wakeLock = null;
 
-    function startSimulation() {
-      if (interval) return;
-
-      document.getElementById('status').innerText = 'Running...';
-
-      interval = setInterval(() => {
-        const event = new KeyboardEvent('keydown', { key: 'Shift' });
-        document.dispatchEvent(event);
-        console.log('Activity simulated');
-      }, 30000);
+    async function requestWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('🔒 Wake Lock is active');
+        wakeLock.addEventListener('release', () => {
+          console.log('🔓 Wake Lock was released');
+        });
+      } catch (err) {
+        console.error('Wake Lock request failed:', err);
+      }
     }
+
+    function simulateTyping() {
+      const input = document.getElementById("ghostInput");
+      input.focus();
+      input.value += ".";
+      input.dispatchEvent(new Event("input"));
+    }
+
+    async function start() {
+      document.getElementById("status").innerText = "Running...";
+      await requestWakeLock();
+
+      setInterval(() => {
+        simulateTyping();
+        console.log('Simulating activity...');
+      }, 30000); // every 30 seconds
+    }
+
+    // Optional: refresh Wake Lock if screen dims
+    document.addEventListener('visibilitychange', () => {
+      if (wakeLock !== null && document.visibilityState === 'visible') {
+        requestWakeLock();
+      }
+    });
   </script>
 </body>
 </html>
