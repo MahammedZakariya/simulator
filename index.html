@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Stay Active Tool</title>
+  <title>Nudge Now</title>
   <style>
     body {
       font-family: Arial;
@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <h1>Stay Active Tool</h1>
+  <h1>Nudge Now</h1>
   <button onclick="start()">Start Activity</button>
   <p id="status">Not running</p>
   <input id="ghostInput" type="text" />
@@ -49,7 +49,7 @@
       setInterval(() => {
         simulateTyping();
         console.log('Simulating activity...');
-      }, 30000); // every 30 seconds
+      }, 30000); // every 10 seconds
     }
 
     // Optional: refresh Wake Lock if screen dims
