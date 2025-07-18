@@ -1,63 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nudge Now</title>
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 100px;
-    }
-    #ghostInput {
-      position: absolute;
-      left: -9999px;
-    }
-  </style>
+  <title>Stay Available</title>
 </head>
 <body>
-  <h1>Nudge Now</h1>
-  <button onclick="start()">Start Activity</button>
-  <p id="status">Not running</p>
-  <input id="ghostInput" type="text" />
+  <h1>🟢 You are "Active"</h1>
+  <p>This tab is simulating activity.</p>
 
   <script>
+    // Prevent screen from going to sleep
     let wakeLock = null;
-
     async function requestWakeLock() {
       try {
         wakeLock = await navigator.wakeLock.request('screen');
-        console.log('🔒 Wake Lock is active');
-        wakeLock.addEventListener('release', () => {
-          console.log('🔓 Wake Lock was released');
-        });
+        console.log('Wake lock is active.');
       } catch (err) {
-        console.error('Wake Lock request failed:', err);
+        console.error(`${err.name}, ${err.message}`);
       }
     }
+    requestWakeLock();
 
-    function simulateTyping() {
-      const input = document.getElementById("ghostInput");
-      input.focus();
-      input.value += ".";
-      input.dispatchEvent(new Event("input"));
-    }
-
-    async function start() {
-      document.getElementById("status").innerText = "Running...";
-      await requestWakeLock();
-
-      setInterval(() => {
-        simulateTyping();
-        console.log('Simulating activity...');
-      }, 30000); // every 10 seconds
-    }
-
-    // Optional: refresh Wake Lock if screen dims
-    document.addEventListener('visibilitychange', () => {
-      if (wakeLock !== null && document.visibilityState === 'visible') {
-        requestWakeLock();
-      }
-    });
+    // Fake activity every 30 seconds
+    setInterval(() => {
+      const event = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 0,
+        clientY: 0,
+      });
+      document.dispatchEvent(event);
+      console.log("Fake activity sent");
+    }, 30000); // every 30 sec
   </script>
 </body>
 </html>
