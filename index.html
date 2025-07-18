@@ -1,36 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Stay Available</title>
+  <title>Stay Online for Teams</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+  </style>
 </head>
 <body>
-  <h1>🟢 You are "Active"</h1>
-  <p>This tab is simulating activity.</p>
+  <h1>🟢 Status: ACTIVE</h1>
+  <p>This tab is sending fake input to keep Teams from going idle.</p>
 
   <script>
-    // Prevent screen from going to sleep
+    // Wake lock to prevent sleep
     let wakeLock = null;
     async function requestWakeLock() {
       try {
         wakeLock = await navigator.wakeLock.request('screen');
-        console.log('Wake lock is active.');
+        console.log('Wake lock acquired');
       } catch (err) {
         console.error(`${err.name}, ${err.message}`);
       }
     }
     requestWakeLock();
 
-    // Fake activity every 30 seconds
-    setInterval(() => {
-      const event = new MouseEvent('mousemove', {
-        bubbles: true,
-        cancelable: true,
-        clientX: 0,
-        clientY: 0,
+    // Fake mouse and keyboard events
+    function sendFakeActivity() {
+      const moveEvent = new MouseEvent('mousemove', {
+        clientX: Math.random() * window.innerWidth,
+        clientY: Math.random() * window.innerHeight,
+        bubbles: true
       });
-      document.dispatchEvent(event);
-      console.log("Fake activity sent");
-    }, 30000); // every 30 sec
+
+      const keyEvent = new KeyboardEvent('keydown', {
+        key: 'Shift',
+        bubbles: true
+      });
+
+      document.dispatchEvent(moveEvent);
+      document.dispatchEvent(keyEvent);
+      console.log('Fake input sent');
+    }
+
+    // Send fake activity every 25 seconds
+    setInterval(sendFakeActivity, 25000);
   </script>
 </body>
 </html>
