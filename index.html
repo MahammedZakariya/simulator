@@ -1,52 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Stay Online for Teams</title>
+  <meta charset="UTF-8">
+  <title>Keep Me Active</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    .status { font-size: 24px; color: green; }
   </style>
 </head>
 <body>
-  <h1>🟢 Status: ACTIVE</h1>
-  <p>This tab is sending fake input to keep Teams from going idle.</p>
+  <h1>Keeping you active... ⏳</h1>
+  <p class="status">Status: Running</p>
 
   <script>
-    // Wake lock to prevent sleep
+    // Wake Lock
     let wakeLock = null;
     async function requestWakeLock() {
       try {
         wakeLock = await navigator.wakeLock.request('screen');
-        console.log('Wake lock acquired');
+        wakeLock.addEventListener('release', () => {
+          console.log('Wake Lock was released');
+        });
+        console.log('Wake Lock is active');
       } catch (err) {
         console.error(`${err.name}, ${err.message}`);
       }
     }
-    requestWakeLock();
 
-    // Fake mouse and keyboard events
-    function sendFakeActivity() {
-      const moveEvent = new MouseEvent('mousemove', {
-        clientX: Math.random() * window.innerWidth,
-        clientY: Math.random() * window.innerHeight,
-        bubbles: true
-      });
-
-      const keyEvent = new KeyboardEvent('keydown', {
-        key: 'Shift',
-        bubbles: true
-      });
-
-      document.dispatchEvent(moveEvent);
-      document.dispatchEvent(keyEvent);
-      console.log('Fake input sent');
+    if ('wakeLock' in navigator) {
+      requestWakeLock();
     }
 
-    // Send fake activity every 25 seconds
-    setInterval(sendFakeActivity, 25000);
+    // Simulate activity
+    setInterval(() => {
+      const event = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: Math.random() * window.innerWidth,
+        clientY: Math.random() * window.innerHeight
+      });
+      document.dispatchEvent(event);
+      console.log('Fake mousemove dispatched');
+    }, 60000); // every 60 sec
   </script>
 </body>
 </html>
